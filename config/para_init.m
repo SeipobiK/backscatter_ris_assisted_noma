@@ -32,7 +32,7 @@ function [values] = para_init()
     values.eta = 0.8; 
     values.R_min_f = 0.1; 
     values.R_min_n =0.1; 
-    values.R_c_min = 0.00001; 
+    values.R_c_min = 0.1; 
     % values.R_c_min = 0.1; 
     values.nu_n = 1; 
 
@@ -41,8 +41,8 @@ function [values] = para_init()
     
 
     % Iterations
-    values.MC_MAX =300;
-    values.outer_iter = 20; 
+    values.MC_MAX =10;
+    values.outer_iter = 15; 
     values.max_iter = 100; 
     values.tol = 1e-5; 
 

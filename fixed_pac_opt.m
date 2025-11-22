@@ -1,72 +1,59 @@
+%% main_simulation_using_channels.m
 clear all; clc;
-addpath(genpath('/home/morolong/Documents/MATLAB/backscatter_ris_assisted_noma'));
-rng(2023);
+addpath(genpath('/home/morolong/Documents/Msc/symbiotic_backscatter_ris_assisted_noma'));
 
-% Initialize parameters
+% Load pre-generated channels
+load('pre_generated_channels.mat', 'H_all', 'g_all', 'f_all', 'rng_seeds', 'BS_array', 'RIS_array');
 para = para_init();
-[BS_array, RIS_array] = generate_arrays(para);
 
-% Constants
+% Simulation parameters
 max_feasible = 25;
 max_iter = 25;
 outer_iter = para.outer_iter;
 MC_MAX = para.MC_MAX;
 K = para.K;
-N = para.N;
 M = para.M;
 
-% Preallocate results for DRIS and NDRIS only
+% Preallocate results
 obj_history_dris = zeros(outer_iter, MC_MAX);
 obj_history_ndris = zeros(outer_iter, MC_MAX);
-alpha_f_mc_ndris = zeros(K,MC_MAX);
-alpha_n_mc_ndris = zeros(K,MC_MAX);
-w_k_ndris = zeros(M, K,MC_MAX);
-w_k_dris = zeros(M, K,MC_MAX);
 
-alpha_f_mc_dris = zeros(K,MC_MAX);
-alpha_n_mc_dris = zeros(K,MC_MAX);
+alpha_f_mc_ndris = zeros(K, MC_MAX);
+alpha_n_mc_ndris = zeros(K, MC_MAX);
+w_k_ndris = zeros(M, K, MC_MAX);
+w_k_dris = zeros(M, K, MC_MAX);
 
+alpha_f_mc_dris = zeros(K, MC_MAX);
+alpha_n_mc_dris = zeros(K, MC_MAX);
 
-rate_f_mc_ndris = zeros(K,MC_MAX);
-rate_n_mc_ndris = zeros(K,MC_MAX);
-rate_c_mc_ndris = zeros(K,MC_MAX);
+rate_f_mc_ndris = zeros(K, MC_MAX);
+rate_n_mc_ndris = zeros(K, MC_MAX);
+rate_c_mc_ndris = zeros(K, MC_MAX);
 
-rate_f_mc_dris = zeros(K,MC_MAX);
-rate_n_mc_dris = zeros(K,MC_MAX);
-rate_c_mc_dris = zeros(K,MC_MAX);
-
-
-rng_seeds = randi(1e6, MC_MAX, 1);
-
-% Create results directory
-results_dir = 'results_passive';
-if ~exist(results_dir, 'dir')
-    mkdir(results_dir);
-end
+rate_f_mc_dris = zeros(K, MC_MAX);
+rate_n_mc_dris = zeros(K, MC_MAX);
+rate_c_mc_dris = zeros(K, MC_MAX);
 
 % Start parallel pool
 if isempty(gcp('nocreate'))
     num_workers = 14;
-    pool = parpool('local', num_workers);
-    fprintf('Using %d workers for parallel processing\n', pool.NumWorkers);
-else
-    pool = gcp;
-    fprintf('Existing pool with %d workers found\n', pool.NumWorkers);
+    parpool('local', num_workers);
 end
 
-% Main parallel loop
-tic;
-[BS_array_par, RIS_array_par] = generate_arrays(para);
 
-parfor mc = 1:MC_MAX
+parfor mc = 1:10
     try
         fprintf('Monte Carlo Iteration %d\n', mc);
         
         % Set random seed
         rng(rng_seeds(mc), 'twister');
 
-        % Generate channels
-        [H_local, g_local, f_local] = generate_channel(para, BS_array_par, RIS_array_par);
+        fprintf('Monte Carlo Iteration %d\n', mc);
+        
+        % Retrieve pre-generated channels
+        H_local = H_all{mc};
+        g_local = g_all{mc};
+        f_local = f_all{mc};
 
         % Precompute channel components
         g_1_all = cell(1, K);
@@ -182,13 +169,38 @@ results.avg_dris = avg_dris;
 results.avg_ndris = avg_ndris;
 
 
+% ============================
+% Generate timestamp + filenames
+% ============================
 timestamp = datestr(now,'yyyymmdd_HHMMSS');
+
 filename = sprintf('4dris_vs_ndris_M%d_N%d_%s.mat', para.MC_MAX, para.N, timestamp);
 filename_all = sprintf('full_workspace_dris_vs_ndris_09alpaN_M%d_N%d_%s.mat', para.MC_MAX, para.N, timestamp);
-save(filename_all);
-save(filename, 'results');
 
-fprintf('Comparison results saved in %s\n', filename);
+% ============================
+% Build folder structure
+% ============================
+base_folder = 'results';
+
+year_str  = datestr(now, 'yyyy');          % e.g. '2025'
+month_str = lower(datestr(now, 'mmm'));    % e.g. 'feb'
+day_str   = datestr(now, 'dd');            % e.g. '20'
+
+output_folder = fullfile(base_folder, year_str, month_str, day_str);
+
+% Create folder if it does not exist
+if ~exist(output_folder, 'dir')
+    mkdir(output_folder);
+end
+
+% ============================
+% Save files inside the folder
+% ============================
+save(fullfile(output_folder, filename_all));
+save(fullfile(output_folder, filename), 'results');
+
+fprintf('Comparison results saved in: %s\n', fullfile(output_folder, filename));
+
 
 
 %% Helper function for DRIS system (Identity J matrices)
@@ -213,7 +225,9 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
     H_n_c = cell(1, K); H_f_c = cell(1, K);
 
     % Initial channel calculations
-    for c=1:K           
+    for c=1:K
+        alpha_f(c) = para.alpha_k_f;
+        alpha_n(c) = para.alpha_k_n;            
         H_n{c} = g_1_all{c}' * J_r * Theta * J_t * G_all_matrix;
         H_f{c} = g_2_all{c}' * J_r * Theta * J_t * G_all_matrix;
         H_n_c{c} = g_b_all{c}' * J_r * Theta * J_t * f1_all{c} * G_all_matrix;
