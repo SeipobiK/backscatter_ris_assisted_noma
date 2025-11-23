@@ -1,6 +1,6 @@
 %% main_simulation_using_channels.m
 clear all; clc;
-addpath(genpath('/home/morolong/Documents/Msc/symbiotic_backscatter_ris_assisted_noma'));
+addpath(genpath('/home/morolong/Documents/MATLAB/backscatter_ris_assisted_noma'));
 
 % Load pre-generated channels
 load('pre_generated_channels.mat', 'H_all', 'g_all', 'f_all', 'rng_seeds', 'BS_array', 'RIS_array');
@@ -148,6 +148,7 @@ fprintf('NDRIS: %.4f bps/Hz\n', avg_ndris(end));
 fprintf('NDRIS improvement vs DRIS: %.2f%%\n', improvement_ndris_vs_dris);
 
 % Plot comparison
+figure;
 x = 1:outer_iter;
 plot(x, avg_dris, '-o', 'DisplayName', 'DRIS (Identity J)', 'LineWidth', 2.5, 'MarkerSize', 8, 'Color', [0.2, 0.2, 0.8]); % Dark Blue
 hold on;
@@ -176,6 +177,7 @@ timestamp = datestr(now,'yyyymmdd_HHMMSS');
 
 filename = sprintf('4dris_vs_ndris_M%d_N%d_%s.mat', para.MC_MAX, para.N, timestamp);
 filename_all = sprintf('full_workspace_dris_vs_ndris_09alpaN_M%d_N%d_%s.mat', para.MC_MAX, para.N, timestamp);
+filename_plot = sprintf('convergence_dris_vs_ndris_09alpaN_M%d_N%d_%s.png', para.MC_MAX, para.N, timestamp);
 
 % ============================
 % Build folder structure
@@ -198,6 +200,7 @@ end
 % ============================
 save(fullfile(output_folder, filename_all));
 save(fullfile(output_folder, filename), 'results');
+saveas(gcf, fullfile(output_folder, filename_plot));
 
 fprintf('Comparison results saved in: %s\n', fullfile(output_folder, filename));
 
@@ -227,7 +230,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
     % Initial channel calculations
     for c=1:K
         alpha_f(c) = para.alpha_k_f;
-        alpha_n(c) = para.alpha_k_n;            
+        alpha_n(c) = para.alpha_k_n;             
         H_n{c} = g_1_all{c}' * J_r * Theta * J_t * G_all_matrix;
         H_f{c} = g_2_all{c}' * J_r * Theta * J_t * G_all_matrix;
         H_n_c{c} = g_b_all{c}' * J_r * Theta * J_t * f1_all{c} * G_all_matrix;
@@ -237,7 +240,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
     w_k = mrt_beamforming(para, H_n);   
     % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
 
-    [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
+    % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
     % Initialize Taylor points
     A_n_prev_n = ones(K, 1); B_n_prev_n = ones(K, 1);
@@ -270,14 +273,16 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
     % Main optimization loop for DRIS
     for tau_2 = 1:outer_iter
         % Update channels
-        for c=1:K           
+        for c=1:K  
+            alpha_f(c) = para.alpha_k_f;
+            alpha_n(c) = para.alpha_k_n;        
             H_n{c} = g_1_all{c}' * J_r * Theta * J_t * G_all_matrix;
             H_f{c} = g_2_all{c}' * J_r * Theta * J_t * G_all_matrix;
             H_n_c{c} = g_b_all{c}' * J_r * Theta * J_t * f1_all{c} * G_all_matrix;
             H_f_c{c} = g_b_all{c}' * J_r * Theta * J_t * f2_all{c} * G_all_matrix;                     
         end
 
-        [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
+        % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
         % Active BF optimization
         [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, ~, ~, ~, ~] = ...
@@ -356,7 +361,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
     % Initial channel calculations
     for c=1:K
         alpha_f(c) = para.alpha_k_f;
-        alpha_n(c) = para.alpha_k_n;            
+        alpha_n(c) = para.alpha_k_n;             
         H_n{c} = g_1_all{c}' * J_r * Theta * J_t * G_all_matrix;
         H_f{c} = g_2_all{c}' * J_r * Theta * J_t * G_all_matrix;
         H_n_c{c} = g_b_all{c}' * J_r * Theta * J_t * f1_all{c} * G_all_matrix;
@@ -367,7 +372,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
     
     % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
 
-    [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
+    % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
     % Initialize Taylor points
     A_n_prev_n = ones(K, 1); B_n_prev_n = ones(K, 1);
@@ -407,7 +412,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
             H_f_c{c} = g_b_all{c}' * J_r * Theta * J_t * f2_all{c} * G_all_matrix;                     
         end
 
-        [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
+        % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
         % Active BF optimization
         [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, ~, ~, ~, ~] = ...
