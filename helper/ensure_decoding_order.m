@@ -15,8 +15,8 @@ function [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_de
         % Calculate equivalent combined channel gains with proper normalization
         H_n_combined = g_local(:, c, 1)' * J_r * Theta * J_t * G_all_matrix * w_k(:, c);
         H_f_combined = g_local(:, c, 2)' * J_r * Theta * J_t * G_all_matrix * w_k(:, c);
-        H_n_combined_c = g_local(:, c, 2)' * J_r * Theta * J_t * G_all_matrix* f_local(c, 1)  * w_k(:, c);
-        H_f_combined_c = g_local(:, c, 2)' * J_r * Theta * J_t * G_all_matrix * f_local(c, 2) * w_k(:, c);
+        H_n_combined_c = g_local(:, c, 2)' * J_r * Theta * J_t * G_all_matrix* f_local(c, 1)*1/f_local(c, 1)  * w_k(:, c);
+        H_f_combined_c = g_local(:, c, 2)' * J_r * Theta * J_t * G_all_matrix * f_local(c, 2)*1/f_local(c, 2) * w_k(:, c);
 
 
         
@@ -42,8 +42,8 @@ function [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_de
             % Near user is stronger (good) - decode later
             g_1_all{c} = g_local(:, c, 1)*scal;  % Near user
             g_2_all{c} = g_local(:, c, 2)*scal;  % Far user  
-            f1_all{c} = f_local(c, 1);
-            f2_all{c} = f_local(c, 2);
+            f1_all{c} = f_local(c, 1)*1/f_local(c, 1);
+            f2_all{c} = f_local(c, 2)*1/f_local(c, 2);
             decoding_order{c} = 'near_strong';
             % disp(['Cluster ', num2str(c), ': Near user stronger - Gamma_n=', ...
             %       num2str(gamma_n), ', Gamma_f=', num2str(gamma_f)]);

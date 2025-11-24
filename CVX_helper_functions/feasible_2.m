@@ -89,28 +89,50 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
                 interference_near = 0;
                 interference_far = 0;
                 interference_near_b = 0;
+                % interference_far_b = 0;
+
+
+                test_int=0;     
+                testa_b=0;
 
                 for j = 1:numClusters
                     if j ~= c
                         interference_near = interference_near + trace(W(:, :, j) * H_n_H_n{c});
                         interference_far = interference_far + trace(W(:, :, j) * H_f_H_f{c});
-                        interference_near_b = interference_near_b + trace(W(:, :, j) * H_f_c_H_f_c{c});
+                        interference_near_b = interference_near_b + trace(W(:, :, j) * H_n_c_H_n_c{c})*eta_k;
+                        
+                        % interference_far_b = interference_far_b + trace(W(:, :, j) * H_f_c_H_f_c{c})*eta_k;
+                        testa_b = testa_b + trace(H_f_c_H_f_c{c}' * H_f_c_H_f_c{c});
+
+                        test_int = test_int + trace(H_n_H_n{c}' * H_n_H_n{c});
                     end
                 end
+            % disp(['Near Interference :', num2str(test_int)]);
+            % disp(['far BST Interference :', num2str(testa_b)]);
+
+            % disp(['Near channel :',num2str(trace(H_n_H_n{c}' * H_n_H_n{c}))]);
+            % disp(['Far channel :',num2str(trace(H_f_H_f{c}' * H_f_H_f{c}))]);
+            % disp(['BST Near channel :',num2str(trace(H_n_c_H_n_c{c}' * H_n_c_H_n_c{c}))]);
+            % disp(['BST Far channel :',num2str(trace(H_f_c_H_f_c{c}' * H_f_c_H_f_c{c}))]);
+            % disp(['Noise :',num2str(para.noise)]);
+            % disp(['alpha_f :',num2str(alpha_f(c))]);
+            % disp(['alpha_f :',num2str(alpha_n(c))]);
+
+
+
 
                 % Main constraints - simplified expressions
                 inv_pos(A_n(c)) <= trace(W(:, :, c) * H_n_H_n{c}) * alpha_n(c) + delta_g;
 
-                B_n(c) >= interference_near + trace(W(:, :, c) * H_n_c_H_n_c{c}) * eta_k + para.noise - delta_g;
+                B_n(c) >= interference_near + interference_near_b + trace(W(:, :, c) * H_n_c_H_n_c{c}) * eta_k + para.noise - delta_g;
 
                 inv_pos(A_f(c)) <= trace(W(:, :, c) * H_f_H_f{c}) * alpha_f(c) + delta_g;
 
-                B_f(c) >= interference_far + trace(W(:, :, c) * H_f_H_f{c}) * alpha_n(c) + ...
-                    trace(W(:, :, c) * H_f_c_H_f_c{c}) * eta_k + para.noise - delta_g;
+                B_f(c) >= interference_far + trace(W(:, :, c) * H_f_H_f{c}) * alpha_n(c)  +  para.noise - delta_g;
 
                 inv_pos(A_c_n(c)) <= trace(W(:, :, c) * H_n_c_H_n_c{c}) * eta_k + delta_g;
 
-                B_c_n(c) >= interference_near_b + para.noise - delta_g;
+                B_c_n(c) >= interference_near_b + interference_near + para.noise - delta_g;
             end
 
              % PSD constraints

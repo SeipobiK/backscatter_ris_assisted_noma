@@ -5,13 +5,13 @@ function [values] = para_init()
     % Basic Parameter2
     % ===============================
     values.noise_dB = -90; % noise power spectral density in dBW/Hz
-    values.scall=350;
+    values.scall=500;
     % values.noise = 10^((val2es.noise_dB - 30)/10) * (62500000000); 
     % values.noise = 10^(values.noise_dB/10)* (200)^4; 
-    values.noise = (1e-12) * (350)^4; % override with fixed scaling
+    values.noise = (1e-12) * (500)^4; % override with fixed scaling
 
-    values.alpha_k_n = 0.6;
-    values.alpha_k_f = 0.4;
+    values.alpha_k_n = 0.3;
+    values.alpha_k_f = 0.7;
 
     % User weights
     values.weights_n = 1; % near user
@@ -21,15 +21,15 @@ function [values] = para_init()
 
     % System dimensions
     values.K_u = 3; % users per cluster
-    values.K = 1;   % number of clusters
-    values.M =4;   % antennas at BS
-    values.RIS_size = [2,16];
+    values.K = 2;   % number of clusters
+    values.M =8;   % antennas at BS
+    values.RIS_size = [2,16]; % RIS dimensions (rows, columns)
     values.N = prod(values.RIS_size);
 
     % Power and rate requirements
 
-    values.P_max =10;
-    values.eta = 0.7; 
+    values.P_max =100;
+    values.eta = 0.8; 
     values.R_min_f = 0.1; 
     values.R_min_n =0.1; 
     values.R_c_min = 0.1; 
@@ -41,13 +41,11 @@ function [values] = para_init()
     
 
     % Iterations
-    values.MC_MAX =10;
+    values.MC_MAX =100;
     values.outer_iter = 15; 
     values.max_iter = 100; 
     values.tol = 1e-5; 
 
-    % Channel/propagation
-    values.scal = 6000; 
     values.pathloss = @(d) 30 + 22*log10(d); 
     values.rician = 10^(-10/10); 
 
@@ -55,6 +53,7 @@ function [values] = para_init()
     % Geometry: BS, RIS, Users
     % ===============================
     [angles, users,distances] = calculate_angles();   
+
     values.BSTdist=distances;
     % BS location (AoD)
     values.BS_loc = [angles.BS_AoD.distance, ...

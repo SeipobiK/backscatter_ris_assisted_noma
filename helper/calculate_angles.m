@@ -10,7 +10,7 @@ RIS = [0, 30, 20];
 % ============================
 cluster_centers = [0, 25, 0;
                    0, 35, 0;
-                   5, 30, 0]; % new cluster center
+                   5, 35, 0]; % new cluster center
 
 radii = [5,5,5]; % radius for each cluster
 
@@ -21,17 +21,17 @@ radii = [5,5,5]; % radius for each cluster
 % ----- Cluster 1 (center: [0,25,0], radius: 5m) -----
 users{1} = [ 0, 28, 0;   
              0, 24, 0;   
-             -2, 28, 0];  
-% 
-% % ----- Cluster 2 (center: [0,35,0], radius: 5m) -----
+             0, 26, 0];  
+
+% ----- Cluster 2 (center: [0,35,0], radius: 5m) -----
 % users{2} = [ -1, 31, 0;   % User 1: North-East
 %              -1, 40, 0;   % User 2: South-West
 %              0, 31, 0];   % User 3: North-East
 % 
-% % ----- Cluster 3 (center: [5,30,0], radius: 5m) -----
-% users{3} = [ 3, 30, 0;   % User 1: North-East   
-%              9, 30, 0;   % User 2: South-West
-%              2, 30, 0];  % User 3: South-East
+% ----- Cluster 3 (center: [5,30,0], radius: 5m) -----
+users{2} = [ 3, 30, 0;   % User 1: North-East   
+             9, 30, 0;   % User 2: South-West
+             6, 30, 0];  % User 3: South-East
 
 
 
@@ -125,39 +125,39 @@ cluster_centers = [0 25 0;   % Cluster 1 center
 %     % % % % % % % % % ============================
 %     % % % % % % % % 4. Visualization
 %     % % % % % % % ============================
-%     figure; hold on; grid on; axis equal;
-%     xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)');
-%     title('BS, RIS, and User Clusters with Circles');
-% 
-%     % Plot BS and RIS
-%     scatter3(BS(1),BS(2),BS(3),100,'r','filled','^'); text(BS(1),BS(2),BS(3)+1,'BS');
-%     scatter3(RIS(1),RIS(2),RIS(3),100,'b','filled','s'); text(RIS(1),RIS(2),RIS(3)+1,'RIS');
-% 
-%     colors = lines(Nclusters);
-%     for c = 1:Nclusters
-%         % Cluster center
-%         center = cluster_centers(c,:);
-%         scatter3(center(1), center(2), center(3), 80, colors(c,:),'d','filled');
-%         text(center(1), center(2), center(3)+0.5,sprintf('Cluster %d', c),'Color','k','FontSize',10,'FontWeight','bold');
-% 
-%         % Draw cluster circle in XY-plane
-%         theta = linspace(0, 2*pi, 100);
-%         x_circle = center(1) + radii(c) * cos(theta);
-%         y_circle = center(2) + radii(c) * sin(theta);
-%         z_circle = center(3) * ones(size(theta));
-%         plot3(x_circle, y_circle, z_circle, '--','Color', colors(c,:), 'LineWidth',1.2);
-% 
-%         % Users
-%         cluster_users = users{c};
-%         scatter3(cluster_users(:,1), cluster_users(:,2), cluster_users(:,3), 50, colors(c,:),'filled','o');
-% 
-%         % Label users
-%         for k = 1:Kusers
-%             text(cluster_users(k,1), cluster_users(k,2), cluster_users(k,3)+0.5, ...
-%                 sprintf('C%d-U%d', c, k), 'Color', colors(c,:), 'FontSize', 8, 'FontWeight','bold');
-%         end
-%     end
-%     legend({'BS','RIS','Cluster Centers','Cluster Circles','Users'});
-%     view(45,25);
-%     hold off;
+    figure; hold on; grid on; axis equal;
+    xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)');
+    title('BS, RIS, and User Clusters with Circles');
+
+    % Plot BS and RIS
+    scatter3(BS(1),BS(2),BS(3),100,'r','filled','^'); text(BS(1),BS(2),BS(3)+1,'BS');
+    scatter3(RIS(1),RIS(2),RIS(3),100,'b','filled','s'); text(RIS(1),RIS(2),RIS(3)+1,'RIS');
+
+    colors = lines(Nclusters);
+    for c = 1:Nclusters
+        % Cluster center
+        center = cluster_centers(c,:);
+        scatter3(center(1), center(2), center(3), 80, colors(c,:),'d','filled');
+        text(center(1), center(2), center(3)+0.5,sprintf('Cluster %d', c),'Color','k','FontSize',10,'FontWeight','bold');
+
+        % Draw cluster circle in XY-plane
+        theta = linspace(0, 2*pi, 100);
+        x_circle = center(1) + radii(c) * cos(theta);
+        y_circle = center(2) + radii(c) * sin(theta);
+        z_circle = center(3) * ones(size(theta));
+        plot3(x_circle, y_circle, z_circle, '--','Color', colors(c,:), 'LineWidth',1.2);
+
+        % Users
+        cluster_users = users{c};
+        scatter3(cluster_users(:,1), cluster_users(:,2), cluster_users(:,3), 50, colors(c,:),'filled','o');
+
+        % Label users
+        for k = 1:Kusers
+            text(cluster_users(k,1), cluster_users(k,2), cluster_users(k,3)+0.5, ...
+                sprintf('C%d-U%d', c, k), 'Color', colors(c,:), 'FontSize', 8, 'FontWeight','bold');
+        end
+    end
+    legend({'BS','RIS','Cluster Centers','Cluster Circles','Users'});
+    view(45,25);
+    hold off;
 end

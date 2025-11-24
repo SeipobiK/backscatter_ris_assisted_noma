@@ -107,6 +107,7 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
                 inter_cluster_interference_near = 0;
                 inter_cluster_interference_far = 0;
                 inter_cluster_interference_near_b = 0;
+                inter_cluster_interference_far_b = 0;                
                 
                 for j = 1:numClusters
                     if j ~= c
@@ -118,25 +119,28 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
                             trace(W(:, :, j) * H_f_H_f{c});
                             
                         inter_cluster_interference_near_b = inter_cluster_interference_near_b + ...
-                            trace(W(:, :, j) * H_n_c_H_n_c{c});
+                            trace(W(:, :, j) * H_n_c_H_n_c{c})*eta_k;
+
+                        inter_cluster_interference_far_b = inter_cluster_interference_far_b + ...
+                            trace(W(:, :, j) * H_f_c_H_f_c{c})*eta_k;    
                     end
                 end
 
                 % Main constraints
                 inv_pos(A_n(c)) <= trace(W(:, :, c) * H_n_H_n{c}) * alpha_n(c);
 
-                B_n(c) >= inter_cluster_interference_near + ...
+                B_n(c) >= inter_cluster_interference_near + inter_cluster_interference_near_b + ...
                         trace(W(:, :, c) * H_n_c_H_n_c{c}) * eta_k + noise;
         
                 inv_pos(A_f(c)) <= trace(W(:, :, c) * H_f_H_f{c}) * alpha_f(c);
 
-                B_f(c) >= inter_cluster_interference_far + ...
+                B_f(c) >= inter_cluster_interference_far + inter_cluster_interference_far_b + ...
                         trace(W(:, :, c) * H_f_H_f{c}) * alpha_n(c) + ...
                         trace(W(:, :, c) * H_f_c_H_f_c{c}) * eta_k + noise;
 
                 inv_pos(A_c_n(c)) <= trace(W(:, :, c) * H_n_c_H_n_c{c}) * eta_k;
 
-                B_c_n(c) >= inter_cluster_interference_near_b + noise;
+                B_c_n(c) >= inter_cluster_interference_near_b +inter_cluster_interference_near+ noise;
             end
     cvx_end
     
@@ -151,12 +155,15 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
     W_opt = W;
     status = cvx_status;
     
-    % Optional: Display results (comment out for maximum speed)
-    if nargout == 0
+
+
+
+
+    
         disp('R_n:'); disp(R_n);
         disp('R_f:'); disp(R_f);
         disp('R_c_n:'); disp(R_c_n);
-    end
+   
 end
 
 

@@ -114,7 +114,9 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_pre
 
                    inter_cluster_interference_near = 0;
                    inter_cluster_interference_far = 0;
+
                    inter_cluster_interference_near_b=0;
+                   inter_cluster_interference_far_b=0;
                    for j = 1:numClusters
                        if j ~= c
                            % Near user inter cluster interference  
@@ -127,7 +129,10 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_pre
                                real(trace(V * (diag(g_2_all{c}')*G_all*w_k(:, j)) * (diag(g_2_all{c}')*G_all*w_k(:, j))')); 
 
                            inter_cluster_interference_near_b= inter_cluster_interference_near_b + ...
-                               real(trace(V* (diag(g_b_all{c}')*G_all*f1_all{c}*w_k(:, j)) * (diag(g_b_all{c})*G_all*f1_all{c}*w_k(:, j))')); 
+                               real(trace(V* (diag(g_b_all{c}')*G_all*f1_all{c}*w_k(:, j)) * (diag(g_b_all{c})*G_all*f1_all{c}*w_k(:, j))'))*eta_k; 
+                               
+                           inter_cluster_interference_far_b= inter_cluster_interference_far_b + ...
+                            real(trace(V* (diag(g_b_all{c}')*G_all*f2_all{c}*w_k(:, j)) * (diag(g_b_all{c})*G_all*f2_all{c}*w_k(:, j))'))*eta_k; 
  
               
                        end
@@ -136,22 +141,22 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_pre
 
                        inv_pos(A_n(c))<=real(trace(V  * H_n{c} * H_n{c}')) * alpha_n(c); % Near user
 
-                        % inter cluster interference  + backscatter interference + noise power
-                       B_n(c)>=inter_cluster_interference_near + ...
+                        % inter cluster interference  + backscatter interference(from other clusters + own cluster) + noise power
+                       B_n(c)>=inter_cluster_interference_near + inter_cluster_interference_near_b +...
                                 real(trace(V * H_n_c{c} * H_n_c{c}')) * eta_k + para.noise ;
 
                         
-                       inv_pos(A_f(c)) <=real(trace(V * H_f{c} * H_f{c}')) * alpha_f(c); 
+                       inv_pos(A_f(c)) <=real(trace(V * H_f{c} * H_f{c}')) * alpha_f(c);  
 
 
-                       B_f(c) >= inter_cluster_interference_far + ...
+                       B_f(c) >= inter_cluster_interference_far + inter_cluster_interference_far_b + ...
                                 real(trace(V  * H_f{c} * H_f{c}'))  * alpha_n(c) + ...
                                 real(trace(V  * H_f_c{c} * H_f_c{c}'))   * eta_k + para.noise ;
 
 
                        inv_pos(A_c_n(c)) <=real(trace(V  * H_n_c{c} * H_n_c{c}')) * eta_k;
 
-                       B_c_n(c)>= inter_cluster_interference_near_b + para.noise  ;
+                       B_c_n(c)>= inter_cluster_interference_near_b + inter_cluster_interference_near  + para.noise;
            end
 
           for m=1:N

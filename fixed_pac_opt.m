@@ -3,12 +3,12 @@ clear all; clc;
 addpath(genpath('/home/morolong/Documents/MATLAB/backscatter_ris_assisted_noma'));
 
 % Load pre-generated channels
-load('pre_generated_channels.mat', 'H_all', 'g_all', 'f_all', 'rng_seeds', 'BS_array', 'RIS_array');
+load('pre_generated_channels/channels_M100_N32_20251124_003306.mat', 'H_all', 'g_all', 'f_all', 'rng_seeds', 'BS_array', 'RIS_array');
 para = para_init();
 
 % Simulation parameters
 max_feasible = 25;
-max_iter = 25;
+max_iter = 15;
 outer_iter = para.outer_iter;
 MC_MAX = para.MC_MAX;
 K = para.K;
@@ -68,8 +68,8 @@ parfor mc = 1:10
             g_1_all{i} = g_local(:, i, 1)*scal;
             g_2_all{i} = g_local(:, i, 2)*scal;
             g_b_all{i} = g_local(:, i, 3)*scal; 
-            f1_all{i} = f_local(i, 1);
-            f2_all{i} = f_local(i, 2);
+            f1_all{i} = f_local(i, 1)*1/f_local(i, 1);
+            f2_all{i} = f_local(i, 2)*1/f_local(i, 2);
         end
         G_all_matrix = H_local*scal;
 
@@ -238,7 +238,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
     end
     
     w_k = mrt_beamforming(para, H_n);   
-    % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+    [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
 
     % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
@@ -332,7 +332,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
 
         obj_history(tau_2) = WSR;
-        % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+        [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
     end
 end
 
@@ -370,7 +370,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
     
     w_k = mrt_beamforming(para, H_n);   
     
-    % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+    [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
 
     % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
@@ -462,7 +462,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
 
         obj_history(tau_2) = WSR;
-        % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+        [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
     end
 end
 toc

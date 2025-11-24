@@ -50,7 +50,7 @@ function [W_opt, A_n_prev, B_n_prev, A_f_prev, B_f_prev, A_c_prev_n, B_c_prev_n,
         % disp(['Iteration: ', num2str(m), ' B_f_opt: ', num2str(B_f_prev')]);
         % disp(['Iteration: ', num2str(m), ' A_c_n_opt: ', num2str(A_c_prev_n')]);
         % disp(['Iteration: ', num2str(m), ' B_c_n_opt: ', num2str(B_c_prev_n')]);
-        % 
+        
         % % Display progress
         % disp(['Iteration: ', num2str(m), ' | Objective: ', sprintf('%.2e', obj_curr)]);
   

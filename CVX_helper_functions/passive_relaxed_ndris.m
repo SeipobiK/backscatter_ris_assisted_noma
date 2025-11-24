@@ -27,6 +27,7 @@ function [V_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
    interference_channels_near = cell(numClusters, numClusters);
    interference_channels_far = cell(numClusters, numClusters);
    interference_channels_near_b = cell(numClusters, numClusters);
+   interference_channels_far_b = cell(numClusters, numClusters);
    
    for c = 1:numClusters
        % Compute main channels
@@ -53,6 +54,7 @@ function [V_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
                interference_channels_near{c, j} = diag(g_1_all{c}' * J_r) * J_t * G_all * w_k(:, j);
                interference_channels_far{c, j} = diag(g_2_all{c}' * J_r) * J_t * G_all * w_k(:, j);
                interference_channels_near_b{c, j} = diag(g_b_all{c}' * J_r) * J_t * f1_all{c} * G_all * w_k(:, j);
+               interference_channels_far_b{c, j} = diag(g_b_all{c}' * J_r) * J_t * f2_all{c} * G_all * w_k(:, j);
            end
        end
    end
@@ -131,37 +133,41 @@ function [V_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
                inter_cluster_interference_near = 0;
                inter_cluster_interference_far = 0;
                inter_cluster_interference_near_b = 0;
+               inter_cluster_interference_far_b = 0;
                
                for j = 1:numClusters
                    if j ~= c
                        H_n_j = interference_channels_near{c, j};
                        H_f_j = interference_channels_far{c, j};
                        H_n_b_j = interference_channels_near_b{c, j};
+                       H_f_b_j = interference_channels_near_b{c, j};
                        
                        inter_cluster_interference_near = inter_cluster_interference_near + ...
                            trace(V * (H_n_j * H_n_j'));
                        inter_cluster_interference_far = inter_cluster_interference_far + ...
                            trace(V * (H_f_j * H_f_j'));
                        inter_cluster_interference_near_b = inter_cluster_interference_near_b + ...
-                           trace(V * (H_n_b_j * H_n_b_j'));
+                           trace(V * (H_n_b_j * H_n_b_j'))*eta_k;
+                       inter_cluster_interference_far_b = inter_cluster_interference_far_b + ...
+                           trace(V * (H_f_b_j * H_f_b_j'))*eta_k;                           
                    end
                end
 
                % Main constraints using precomputed values
                inv_pos(A_n(c)) <= trace(V * H_n_H_n{c}) * alpha_n(c);
 
-               B_n(c) >= inter_cluster_interference_near + ...
+               B_n(c) >= inter_cluster_interference_near + inter_cluster_interference_near_b+...
                        trace(V * H_n_c_H_n_c{c}) * eta_k + noise;
 
                inv_pos(A_f(c)) <= trace(V * H_f_H_f{c}) * alpha_f(c);
 
-               B_f(c) >= inter_cluster_interference_far + ...
+               B_f(c) >= inter_cluster_interference_far + inter_cluster_interference_far_b + ...
                        trace(V * H_f_H_f{c}) * alpha_n(c) + ...
                        trace(V * H_f_c_H_f_c{c}) * eta_k + noise;
 
                inv_pos(A_c_n(c)) <= trace(V * H_n_c_H_n_c{c}) * eta_k;
 
-               B_c_n(c) >= inter_cluster_interference_near_b + noise;
+               B_c_n(c) >= inter_cluster_interference_near_b +inter_cluster_interference_near+ noise;
            end
            
            % Unit modulus constraints

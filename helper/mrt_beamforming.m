@@ -14,7 +14,7 @@ P_max = para.P_max;
 alpha = ones(1,K)/K;  % sum(alpha) = 1
 % alpha=[0.4,0.6];
 
-disp(alpha);
+% disp(alpha);
 
 
 
