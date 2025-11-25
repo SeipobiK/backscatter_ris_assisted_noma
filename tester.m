@@ -46,8 +46,8 @@ tic;
 [BS_array_par, RIS_array_par] = generate_arrays(para);
   
        
-for mc = 1:MC_MAX
-    % try
+parfor mc = 1:MC_MAX
+    try
         fprintf('Monte Carlo Iteration %d\n', mc);
         
         % Set random seed for reproducibility
@@ -166,7 +166,7 @@ for mc = 1:MC_MAX
                         A_c_prev_n = A_c_n_opt; B_c_prev_n = B_c_n_opt;
 
 
-                        djkfjf
+                        
 
                      % 
                      % % extract the solution(Update Active BF vector for next iteration)
@@ -183,6 +183,8 @@ for mc = 1:MC_MAX
                             A_n_prev_n = A_n_opt_n; B_n_prev_n = B_n_opt_n; 
                             A_f_prev_n = A_f_opt_n; B_f_prev_n = B_f_opt_n; 
                             A_c_prev_n_n = A_c_n_opt_n; B_c_prev_n_n = B_c_n_opt_n;
+
+                            
 
 
                    % % % Extract optimal phase shifts(DRIS)
@@ -307,10 +309,10 @@ for mc = 1:MC_MAX
        % obj_history_dris(:, mc) = obj_history;
       % disp(obj_history_n);
     % % 
-    % catch ME
-    %    obj_history_ndris(:, mc) = NaN;
-    %    obj_history_dris(:, mc) = NaN;    
-    % end
+    catch ME
+       obj_history_ndris(:, mc) = NaN;
+       obj_history_dris(:, mc) = NaN;    
+    end
 end 
 
 disp(obj_history_ac);

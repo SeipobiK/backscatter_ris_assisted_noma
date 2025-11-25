@@ -1,59 +1,72 @@
-%% main_simulation_using_channels.m
 clear all; clc;
 addpath(genpath('/home/morolong/Documents/MATLAB/backscatter_ris_assisted_noma'));
+rng(2022);
 
-% Load pre-generated channels
-load('pre_generated_channels/channels_M100_N32_20251124_003306.mat', 'H_all', 'g_all', 'f_all', 'rng_seeds', 'BS_array', 'RIS_array');
+% Initialize parameters
 para = para_init();
+[BS_array, RIS_array] = generate_arrays(para);
 
-% Simulation parameters
+% Constants
 max_feasible = 25;
-max_iter = 15;
+max_iter = 25;
 outer_iter = para.outer_iter;
 MC_MAX = para.MC_MAX;
 K = para.K;
+N = para.N;
 M = para.M;
 
-% Preallocate results
+% Preallocate results for DRIS and NDRIS only
 obj_history_dris = zeros(outer_iter, MC_MAX);
 obj_history_ndris = zeros(outer_iter, MC_MAX);
+alpha_f_mc_ndris = zeros(K,MC_MAX);
+alpha_n_mc_ndris = zeros(K,MC_MAX);
+w_k_ndris = zeros(M, K,MC_MAX);
+w_k_dris = zeros(M, K,MC_MAX);
 
-alpha_f_mc_ndris = zeros(K, MC_MAX);
-alpha_n_mc_ndris = zeros(K, MC_MAX);
-w_k_ndris = zeros(M, K, MC_MAX);
-w_k_dris = zeros(M, K, MC_MAX);
+alpha_f_mc_dris = zeros(K,MC_MAX);
+alpha_n_mc_dris = zeros(K,MC_MAX);
 
-alpha_f_mc_dris = zeros(K, MC_MAX);
-alpha_n_mc_dris = zeros(K, MC_MAX);
 
-rate_f_mc_ndris = zeros(K, MC_MAX);
-rate_n_mc_ndris = zeros(K, MC_MAX);
-rate_c_mc_ndris = zeros(K, MC_MAX);
+rate_f_mc_ndris = zeros(K,MC_MAX);
+rate_n_mc_ndris = zeros(K,MC_MAX);
+rate_c_mc_ndris = zeros(K,MC_MAX);
 
-rate_f_mc_dris = zeros(K, MC_MAX);
-rate_n_mc_dris = zeros(K, MC_MAX);
-rate_c_mc_dris = zeros(K, MC_MAX);
+rate_f_mc_dris = zeros(K,MC_MAX);
+rate_n_mc_dris = zeros(K,MC_MAX);
+rate_c_mc_dris = zeros(K,MC_MAX);
+
+
+rng_seeds = randi(1e6, MC_MAX, 1);
+
+% Create results directory
+results_dir = 'results_passive';
+if ~exist(results_dir, 'dir')
+    mkdir(results_dir);
+end
 
 % Start parallel pool
 if isempty(gcp('nocreate'))
     num_workers = 14;
-    parpool('local', num_workers);
+    pool = parpool('local', num_workers);
+    fprintf('Using %d workers for parallel processing\n', pool.NumWorkers);
+else
+    pool = gcp;
+    fprintf('Existing pool with %d workers found\n', pool.NumWorkers);
 end
 
+% Main parallel loop
+tic;
+[BS_array_par, RIS_array_par] = generate_arrays(para);
 
-parfor mc = 1:10
+parfor mc = 1:MC_MAX
     try
         fprintf('Monte Carlo Iteration %d\n', mc);
         
         % Set random seed
         rng(rng_seeds(mc), 'twister');
 
-        fprintf('Monte Carlo Iteration %d\n', mc);
-        
-        % Retrieve pre-generated channels
-        H_local = H_all{mc};
-        g_local = g_all{mc};
-        f_local = f_all{mc};
+        % Generate channels
+        [H_local, g_local, f_local] = generate_channel(para, BS_array_par, RIS_array_par);
 
         % Precompute channel components
         g_1_all = cell(1, K);
@@ -68,8 +81,8 @@ parfor mc = 1:10
             g_1_all{i} = g_local(:, i, 1)*scal;
             g_2_all{i} = g_local(:, i, 2)*scal;
             g_b_all{i} = g_local(:, i, 3)*scal; 
-            f1_all{i} = f_local(i, 1)*1/f_local(i, 1);
-            f2_all{i} = f_local(i, 2)*1/f_local(i, 2);
+            f1_all{i} = f_local(i, 1);
+            f2_all{i} = f_local(i, 2);
         end
         G_all_matrix = H_local*scal;
 
@@ -148,7 +161,7 @@ fprintf('NDRIS: %.4f bps/Hz\n', avg_ndris(end));
 fprintf('NDRIS improvement vs DRIS: %.2f%%\n', improvement_ndris_vs_dris);
 
 % Plot comparison
-figure;
+fig = figure;
 x = 1:outer_iter;
 plot(x, avg_dris, '-o', 'DisplayName', 'DRIS (Identity J)', 'LineWidth', 2.5, 'MarkerSize', 8, 'Color', [0.2, 0.2, 0.8]); % Dark Blue
 hold on;
@@ -200,7 +213,7 @@ end
 % ============================
 save(fullfile(output_folder, filename_all));
 save(fullfile(output_folder, filename), 'results');
-saveas(gcf, fullfile(output_folder, filename_plot));
+saveas(fig, fullfile(output_folder, filename_plot));
 
 fprintf('Comparison results saved in: %s\n', fullfile(output_folder, filename));
 
@@ -238,7 +251,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
     end
     
     w_k = mrt_beamforming(para, H_n);   
-    [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+    % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
 
     % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
@@ -332,12 +345,12 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
 
         obj_history(tau_2) = WSR;
-        [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+        % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
     end
 end
 
 %% Helper function for NDRIS system (Optimized J matrices)
-function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(para, H_local, g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible)
+function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(para, H_local , g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible)
     
     K = para.K;
     N = para.N;
@@ -370,7 +383,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
     
     w_k = mrt_beamforming(para, H_n);   
     
-    [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+    % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
 
     % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
 
@@ -462,7 +475,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
 
         obj_history(tau_2) = WSR;
-        [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+        % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
     end
 end
 toc

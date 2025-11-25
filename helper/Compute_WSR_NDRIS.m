@@ -50,11 +50,11 @@ function [WSR,R_n,R_f,R_c_n,A_n,B_n] = Compute_WSR_NDRIS(para,w_k,G_all_matrix, 
                                abs(g_2_all{c}'*J_r*Theta*J_t*G_all_matrix*w_k(:, j)).^2;
 
                            inter_cluster_interference_near_b= inter_cluster_interference_near_b + ...
-                                abs(g_b_all{c}'*J_r*Theta*J_t*f1_all{c}*G_all_matrix*w_k(:, j)).^2*eta_k;
+                                eta_k*abs(g_b_all{c}'*J_r*Theta*J_t*f1_all{c}*G_all_matrix*w_k(:, j)).^2;
 
-                         inter_cluster_interference_near_b= inter_cluster_interference_near_b + ...
-                                abs(g_b_all{c}'*J_r*Theta*J_t*f2_all{c}*G_all_matrix*w_k(:, j)).^2*eta_k;                                
-                            
+                         % inter_cluster_interference_near_b= inter_cluster_interference_near_b + ...
+                         %        abs(g_b_all{c}'*J_r*Theta*J_t*f2_all{c}*G_all_matrix*w_k(:, j)).^2*eta_k;                                
+                         % 
                         end
 
                     end
@@ -66,9 +66,8 @@ function [WSR,R_n,R_f,R_c_n,A_n,B_n] = Compute_WSR_NDRIS(para,w_k,G_all_matrix, 
         
                     A_f(c) = abs( H_f{c}).^2 * alpha_f(c);
 
-                    B_f(c) = inter_cluster_interference_far + inter_cluster_interference_near_b+ ...
-                            abs(H_f{c}).^2  * alpha_n(c) + ...
-                            abs(H_f_c{c}).^2  * eta_k + noise;
+                    B_f(c) = inter_cluster_interference_far + ...
+                            abs(H_f{c}).^2  * alpha_n(c) + noise;
 
                     A_c_n(c) = abs(H_n_c{c}).^2 * eta_k;
 

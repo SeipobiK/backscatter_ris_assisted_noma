@@ -121,8 +121,8 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
                         inter_cluster_interference_near_b = inter_cluster_interference_near_b + ...
                             trace(W(:, :, j) * H_n_c_H_n_c{c})*eta_k;
 
-                        inter_cluster_interference_far_b = inter_cluster_interference_far_b + ...
-                            trace(W(:, :, j) * H_f_c_H_f_c{c})*eta_k;    
+                        % inter_cluster_interference_far_b = inter_cluster_interference_far_b + ...
+                        %     trace(W(:, :, j) * H_f_c_H_f_c{c})*eta_k;    
                     end
                 end
 
@@ -134,9 +134,8 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
         
                 inv_pos(A_f(c)) <= trace(W(:, :, c) * H_f_H_f{c}) * alpha_f(c);
 
-                B_f(c) >= inter_cluster_interference_far + inter_cluster_interference_far_b + ...
-                        trace(W(:, :, c) * H_f_H_f{c}) * alpha_n(c) + ...
-                        trace(W(:, :, c) * H_f_c_H_f_c{c}) * eta_k + noise;
+                B_f(c) >= inter_cluster_interference_far + ...
+                        trace(W(:, :, c) * H_f_H_f{c}) * alpha_n(c)  + noise;
 
                 inv_pos(A_c_n(c)) <= trace(W(:, :, c) * H_n_c_H_n_c{c}) * eta_k;
 
@@ -160,9 +159,9 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
 
 
     
-        disp('R_n:'); disp(R_n);
-        disp('R_f:'); disp(R_f);
-        disp('R_c_n:'); disp(R_c_n);
+        % disp('R_n:'); disp(R_n);
+        % disp('R_f:'); disp(R_f);
+        % disp('R_c_n:'); disp(R_c_n);
    
 end
 

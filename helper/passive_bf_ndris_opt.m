@@ -201,8 +201,8 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
             %  disp(['Iteration: ', num2str(m), ' | Objective: ', sprintf('%.10f', obj_history(m))]);
              if m > 1
                 %  disp(['Change: ', sprintf('%.10f', (obj_history(m) - obj_history(m-1)))]);
-                 % disp(current_ratio+step_size(m));
-                 % disp(step_size(m));
+                %  disp(current_ratio+step_size(m));
+                %  disp(step_size(m));
              end
              % disp(['    Rank(V_', num2str(m), '): ', num2str(rank(V_opt))]);
              % disp(sorted_eig_);
@@ -230,12 +230,12 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
 
 
 
-        relax_parameter(m) = min(1, current_ratio + 0.65*(1-current_ratio)); % 10% step
+        relax_parameter(m) = min(1, current_ratio + 0.7*(1-current_ratio)); % 10% step
         % disp(['Relax  parametr :',num2str(relax_parameter(m))]);  
         % disp(['Step size :',num2str(step_size(m))]);
       
         % Check convergence
-        if m > 1 && abs(obj_history(m) - obj_history(m-1)) < 1e-4 && strcmp(cvx_status, 'Solved') && abs(1-relax_parameter(m)) <= 1e-5
+        if m > 1 && abs(obj_history(m) - obj_history(m-1)) < 1e-3 && strcmp(cvx_status, 'Solved') && abs(1-relax_parameter(m)) <= 1e-5
              converged = true;
              obj_history = obj_history(1:m); 
             break;

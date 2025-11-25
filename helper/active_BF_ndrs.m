@@ -50,7 +50,7 @@ function [W_opt, A_n_prev, B_n_prev, A_f_prev, B_f_prev, A_c_prev_n, B_c_prev_n,
         end
 
         % Check convergenc
-        if m > 1 && abs(obj_history(m) - obj_history(m-1)) < 1e-5
+        if m > 1 && abs(obj_history(m) - obj_history(m-1)) < 1e-3
             converged = true;
             obj_history = obj_history(1:m);
             break;
