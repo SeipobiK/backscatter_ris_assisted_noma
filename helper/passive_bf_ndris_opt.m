@@ -161,7 +161,7 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
     U_opt(:,:,1) = V_opt_init;
     obj_history(1) = obj_curr;
     initial_ratio = max_eigenvalue_V_opt(1)/trace(U_opt(:,:,1));
-    step_size(1) = (1-initial_ratio)*0.7;
+    step_size(1) = (1-initial_ratio)*0.45;
 
     relax_parameter(1)=min(1, max_eigenvalue_V_opt(1)/trace(U_opt(:,:,1)) + step_size(1));
 
@@ -169,7 +169,8 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
 
         if ~strcmp(status, 'Solved')
             V_opt=V_opt_init;
-            warning('Update failed at MC %d iteration %d', mc, m);
+            disp(status);
+            warning('Passive hesesss failed at MC %d iteration %d', mc, m);
             break;
         end
 
@@ -198,7 +199,7 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
             current_ratio = eig_max/trace(V_opt);
 
             % % Display progress
-            %  disp(['Iteration: ', num2str(m), ' | Objective: ', sprintf('%.10f', obj_history(m))]);
+            %  disp(['Iteration pASSIVE: ', num2str(m), ' | Objective: ', sprintf('%.10f', obj_history(m))]);
              if m > 1
                 %  disp(['Change: ', sprintf('%.10f', (obj_history(m) - obj_history(m-1)))]);
                 %  disp(current_ratio+step_size(m));
@@ -215,6 +216,8 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
             obj_history(m) = obj_history(m-1);
             step_size(m)=step_size(m)/2;
             % disp('failed due to step size :');
+            % disp('Passive herr failed at MC %d iteration %d', mc, m);
+
             if step_size(m)<1e-6
                obj_history=NaN;
                break;
@@ -230,7 +233,7 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
 
 
 
-        relax_parameter(m) = min(1, current_ratio + 0.7*(1-current_ratio)); % 10% step
+        relax_parameter(m) = min(1, current_ratio + 0.5*(1-current_ratio)); % 10% step
         % disp(['Relax  parametr :',num2str(relax_parameter(m))]);  
         % disp(['Step size :',num2str(step_size(m))]);
       

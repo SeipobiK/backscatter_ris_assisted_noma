@@ -55,7 +55,7 @@ function [alpha_n, alpha_f] = pac_opt_final(para,w_k,G_all_matrix, g_1_all, g_2_
                         end
 
                     end
-                    eta_k=0;
+          
 
                     A_n(c)= abs(H_n{c}).^2;
 
@@ -64,8 +64,7 @@ function [alpha_n, alpha_f] = pac_opt_final(para,w_k,G_all_matrix, g_1_all, g_2_
         
                     A_f(c) = abs( H_f{c}).^2;
 
-                    B_f(c) = inter_cluster_interference_far + inter_cluster_interference_far_b + ...
-                            abs(H_f_c{c}).^2  * eta_k + noise;
+                    B_f(c) = inter_cluster_interference_far   + noise;
 
                     
 
@@ -73,31 +72,32 @@ function [alpha_n, alpha_f] = pac_opt_final(para,w_k,G_all_matrix, g_1_all, g_2_
                     gamma_f= A_f(c) / B_f(c);
                     gamma_n= A_n(c) / B_n(c);
 
-                            % Minimum rate requirements
+                    % Minimum rate requirements
                     r_min = 2^para.R_min_f - 1;
                     
                     % NOMA Power Allocation (assuming fixed: near=strong, far=weak)
                     % Far user (weak) gets more power, Near user (strong) gets less power
-                    alpha_n(c) = (r_min / (1 + r_min))*(1 + 1/gamma_f);
-                    alpha_f(c) = 1 - alpha_n(c);
+                    alpha_f(c) = (r_min / (1 + r_min))*(1 + 1/gamma_f);
+                    alpha_n(c) = 1 - alpha_f(c);
+                    test_r=r_min / (1 + r_min);
+                    test_g=test_r*(1 + 1/gamma_f);
                     
                     % Verify decoding order is maintained
-                    if gamma_n < gamma_f
-                        warning(['Cluster ', num2str(c), ': Decoding order violated! Gamma_n=', ...
-                                 num2str(gamma_n), ', Gamma_f=', num2str(gamma_f)]);
-                    end
+                    % if gamma_n < gamma_f
+                    %     % warning(['Cluster ', num2str(c), ': Decoding order violated! Gamma_n=', ...
+                    %     %          num2str(gamma_n), ', Gamma_f=', num2str(gamma_f),' ',num2str(gamma_f-gamma_n)] );
+                    % end
                     
                     % disp(['Cluster ', num2str(c), ': Gamma_n=', num2str(gamma_n), ...
                     %       ', Gamma_f=', num2str(gamma_f), ', Alpha_n=', num2str(alpha_n(c)), ...
                     %       ', Alpha_f=', num2str(alpha_f(c))]);
                     % 
                     % 
-                    disp(gamma_n);
 
-                    disp(['near user gamma  :',num2str(gamma_f),'   R min  : ',num2str(r_min),' PAC near user  :',num2str(alpha_n(c))])
-                    disp(['near user gamma  :',num2str(gamma_f),'   R min  : ',num2str(r_min),' PAC far user  :',num2str(alpha_f(c))])
-                    alpha_f(c)=1;
-                    alpha_n(c)=0;
+                    % disp(['near user gamma  :',num2str(gamma_f),' Cluster   ',num2str(c), '  R min  : ',num2str(test_r),' Difference  ',num2str(gamma_f-gamma_n), ' PAC near user  :',num2str(alpha_n(c))])
+                    % disp(['far user gamma  :',num2str(test_g),'   R min  : ',num2str(test_r),' PAC far user  :',num2str(alpha_f(c))])
+                    % alpha_f(c) = para.alpha_k_f;
+                    % alpha_n(c) = para.alpha_k_n;  
 
                     
                               

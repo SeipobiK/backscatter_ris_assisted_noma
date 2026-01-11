@@ -108,15 +108,15 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
                     end
                 end
             % disp(['Near Interference :', num2str(test_int)]);
-            % disp(['far BST Interference :', num2str(testa_b)]);
+            % % disp(['far BST Interference :', num2str(testa_b)]);
 
             % disp(['Near channel :',num2str(trace(H_n_H_n{c}' * H_n_H_n{c}))]);
             % disp(['Far channel :',num2str(trace(H_f_H_f{c}' * H_f_H_f{c}))]);
             % disp(['BST Near channel :',num2str(trace(H_n_c_H_n_c{c}' * H_n_c_H_n_c{c}))]);
-            % disp(['BST Far channel :',num2str(trace(H_f_c_H_f_c{c}' * H_f_c_H_f_c{c}))]);
+            % % disp(['BST Far channel :',num2str(trace(H_f_c_H_f_c{c}' * H_f_c_H_f_c{c}))]);
             % disp(['Noise :',num2str(para.noise)]);
-            % disp(['alpha_f :',num2str(alpha_f(c))]);
-            % disp(['alpha_f :',num2str(alpha_n(c))]);
+            % % disp(['alpha_f :',num2str(alpha_f(c))]);
+            % % disp(['alpha_f :',num2str(alpha_n(c))]);
 
 
 

@@ -328,7 +328,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_dris_system(para
         disp(['======== DRIS Outer Iteration ', num2str(tau_2), ' ========']);
 
         if tau_2 > 1
-        %  [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
+         [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
         
         end
         % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
@@ -474,7 +474,7 @@ function [obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n] = run_ndris_system(par
         disp(['======== NDRIS Outer Iteration ', num2str(tau_2), ' ========']);
 
         if tau_2 > 1
-            % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
+            [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
         end
 
         % Active BF optimization

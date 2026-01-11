@@ -23,8 +23,8 @@ function [WSR,R_n,R_f,R_c_n,A_n,B_n] = Compute_WSR_NDRIS(para,w_k,G_all_matrix, 
 
         for c=1:K
             % disp('========================Active BFFFF======================================');
-              alpha_f(c)=para.alpha_k_f;
-              alpha_n(c)=para.alpha_k_n;            
+            %   alpha_f(c)=para.alpha_k_f;
+            %   alpha_n(c)=para.alpha_k_n;            
               H_n{c}  = g_1_all{c}'*J_r*Theta*J_t*G_all_matrix*w_k(:, c);
               H_f{c}  = g_2_all{c}'*J_r*Theta*J_t*G_all_matrix*w_k(:, c);
 

@@ -10,8 +10,8 @@ function [values] = para_init()
     % values.noise = 10^(values.noise_dB/10)* (200)^4; 
     values.noise = (1e-12) * (400)^4; % override with fixed scaling
 
-    values.alpha_k_n = 0.3;
-    values.alpha_k_f = 0.7;
+    values.alpha_k_n = 0.1;
+    values.alpha_k_f = 0.9;
 
     % User weights
     values.weights_n = 1; % near user
@@ -22,19 +22,20 @@ function [values] = para_init()
     % System dimensions
     values.K_u = 3; % users per cluster
     values.K = 2;   % number of clusters
-    values.M =5;   % antennas at BS
-    values.RIS_size = [2,10]; % RIS dimensions (rows, columns)
+    values.M =8;   % antennas at BS
+    values.RIS_size = [2,16]; % RIS dimensions (rows, columns)
     values.N = prod(values.RIS_size);
 
     % Power and rate requirements
 
-    values.P_max =50;
-    values.eta = 0.8; 
-    values.R_min_f = 0.1; 
-    values.R_min_n =0.1; 
+    values.P_max =100; % maximum transmit power in Watts
+    values.eta = 0.7; % backscatter coefficient
+    values.R_min_f = 2.5; 
+    values.R_min_n =2.5; 
     values.R_c_min = 0.1; 
     % values.R_c_min = 0.1; 
     values.nu_n = 1; 
+
 
     values.nu_f = 1; 
     values.nu_c = 1; 
@@ -42,7 +43,7 @@ function [values] = para_init()
 
     % Iterations
     values.MC_MAX =20;
-    values.outer_iter = 20; 
+    values.outer_iter = 15; 
     values.max_iter = 100; 
     values.tol = 1e-5; 
 

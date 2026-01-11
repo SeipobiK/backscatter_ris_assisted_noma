@@ -13,9 +13,13 @@ function [W_opt, A_n_prev, B_n_prev, A_f_prev, B_f_prev, A_c_prev_n, B_c_prev_n,
         [W_opt, A_n, B_n, A_f, B_f, A_cn, B_cn, obj_curr, cvx_status] = ...
             update(para, H_n, H_f, H_n_c, H_f_c, A_n_prev, B_n_prev, A_f_prev, B_f_prev, A_c_prev_n, B_c_prev_n,alpha_f,alpha_n);
 
+        % disp(['test before return active_BF_ndrs --1--: ', num2str(B_n')]);
+
+       
+
         if ~strcmp(cvx_status, 'Solved')
-            % disp('failedddd');
-            % disp(cvx_status);
+            disp('failedddd');
+            disp(cvx_status);
             break;
         end
 
@@ -23,6 +27,7 @@ function [W_opt, A_n_prev, B_n_prev, A_f_prev, B_f_prev, A_c_prev_n, B_c_prev_n,
         A_n_prev = A_n; B_n_prev = B_n;
         A_f_prev = A_f; B_f_prev = B_f;
         A_c_prev_n = A_cn; B_c_prev_n = B_cn;
+        %  disp(['test before return active_BF_ndrs---2---: ', num2str(B_n_prev')]);
         % W_init = W_opt;
         obj_history(m) = obj_curr;
         obj_history_mc(m) = obj_curr;  % Store WSR for this iteration
@@ -32,10 +37,11 @@ function [W_opt, A_n_prev, B_n_prev, A_f_prev, B_f_prev, A_c_prev_n, B_c_prev_n,
         % disp(['Iteration: ', num2str(m), ' A_f_opt: ', num2str(A_f_prev')]);
         % disp(['Iteration: ', num2str(m), ' B_f_opt: ', num2str(B_f_prev')]);
         % disp(['Iteration: ', num2str(m), ' A_c_n_opt: ', num2str(A_c_prev_n')]);
+        % disp(['Iteration: ', num2str(m), ' pac far: ', num2str(alpha_f')]);       
         % disp(['Iteration: ', num2str(m), ' B_c_n_opt: ', num2str(B_c_prev_n')]);
 
         % Display progress
-        % disp(['Iteration: ', num2str(m), ' | Objective: ', sprintf('%.10f', obj_curr)]);
+        % disp(['Iteration active BF: ', num2str(m), ' | Objective: ', sprintf('%.10f', obj_curr)]);
         % disp(['    WSR: ', num2str(WSR)]);
         if m > 1
             % disp(['    Change: ', sprintf('%.10f', abs(obj_history(m) - obj_history(m-1)))]);

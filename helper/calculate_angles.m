@@ -2,7 +2,7 @@ function [angles, users,distances] = calculate_angles()
     % ============================
     % Fixed BS and RIS positions
     % ============================
-BS = [0, 0, 20];
+BS = [0, 10, 20];
 RIS = [0, 30, 20];
 
 % ============================
@@ -20,8 +20,8 @@ radii = [5,5,5]; % radius for each cluster
 
 % ----- Cluster 1 (center: [0,25,0], radius: 5m) -----
 users{1} = [ 0, 28, 0;   
-             0, 24, 0;   
-             -1, 28, 0];  
+             0, 26, 0;   
+             2, 27, 0];  
 
 % ----- Cluster 2 (center: [0,35,0], radius: 5m) -----
 % users{2} = [ -1, 31, 0;   % User 1: North-East
@@ -30,8 +30,8 @@ users{1} = [ 0, 28, 0;
 % 
 % ----- Cluster 3 (center: [5,30,0], radius: 5m) -----
 users{2} = [ 3, 30, 0;   % User 1: North-East   
-             9, 30, 0;   % User 2: South-West
-             3, 31, 0];  % User 3: South-East
+             6, 30, 0;   % User 2: South-West
+             4, 29, 0];  % User 3: South-East
 
 
 

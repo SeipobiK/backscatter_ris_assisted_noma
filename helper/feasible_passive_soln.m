@@ -24,7 +24,7 @@ function [V_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
         A_f_prev = A_f_opt; B_f_prev = B_f_opt;
         A_c_prev_n = A_c_n_opt; B_c_prev_n = B_c_n_opt;
 
-        % % Display progress (optional)
+        % % % Display progress (optional)
         % disp(['Iteration: ', num2str(m), ' A_n_opt: ', num2str(A_n_opt')]);
         % disp(['Iteration: ', num2str(m), ' B_n_opt: ', num2str(B_n_opt')]);
         % disp(['Iteration: ', num2str(m), ' A_f_opt: ', num2str(A_f_opt')]);
@@ -35,7 +35,7 @@ function [V_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt, obj_p
         % disp(['Iteration: ', num2str(m), ', Status: ', cvx_status]);
 
         % Check convergence
-        if strcmp(cvx_status, 'Solved') && abs(obj_prev) < 1e-7
+        if strcmp(cvx_status, 'Solved') && abs(obj_prev) < 1e-8
             % disp('Convergence achieved.');
             % disp(['Objective Value: ', num2str(obj_prev)]);
             converged = true;
