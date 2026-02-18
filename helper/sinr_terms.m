@@ -1,4 +1,4 @@
-function [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para,w_k,G_all_matrix, g_1_all,...
+function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cluster_interference_far,inter_cluster_interference_n_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
     g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r)
          % power= abs(w_k(:,1))^2 + abs(w_k(:,2))^2;
          % disp(['Total power in Compute WSR: ', num2str(power)]);         
@@ -6,6 +6,10 @@ function [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para,w_k,G_all_matrix, 
           K = para.K;
           eta_k=para.eta;
           N=para.N; % Number of reflecting elements at RIS
+          inter_cluster_interference_n=zeros(numClusters,1);
+          inter_cluster_interference_n_bst=zeros(numClusters,1);
+          inter_cluster_interference_f=zeros(numClusters,1);
+          inter_cluster_interference_n_b=zeros(numClusters,1);
           A_n = zeros(numClusters, 1); % Initialize A_n vector
           B_n = zeros(numClusters, 1); % Initialize B_n vector
           A_f = zeros(numClusters, 1); % Initialize A_f vector
@@ -63,15 +67,21 @@ function [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para,w_k,G_all_matrix, 
 
                     B_n(c) =inter_cluster_interference_near + inter_cluster_interference_near_b+...
                             abs(H_n_c{c}).^2 * eta_k + noise;
-        
+
+                    inter_cluster_interference_n_bst(c)=inter_cluster_interference_near_b+abs(H_n_c{c}).^2 * eta_k;
+                    inter_cluster_interference_n(c)=inter_cluster_interference_near;
+                    inter_cluster_interference_f(c)=inter_cluster_interference_far;
+
                     A_f(c) = abs( H_f{c}).^2 * alpha_f(c);
 
                     B_f(c) = inter_cluster_interference_far + ...
                             abs(H_f{c}).^2  * alpha_n(c) + noise;
 
+
                     A_c_n(c) = abs(H_n_c{c}).^2 * eta_k;
 
                     B_c_n(c) = inter_cluster_interference_near_b + inter_cluster_interference_near+ noise;
+                    inter_cluster_interference_n_b(c)=inter_cluster_interference_near_b;
 
 
                   

@@ -1,4 +1,4 @@
-r1=load("results/2026/jan/11/full_workspace_dris_vs_ndris_09alpaN_M20_N32_20260111_152829.mat");
+r1=load("results/2026/jan/23/full_workspace_dris_vs_ndris_09alpaN_M500_N32_20260123_114704.mat");
 % r1=load("results/2025/dec/21/full_workspace_dris_vs_ndris_09alpaN_M5000_N32_20251221_220053.mat");
 disp(r1.alpha_f_mc_ndris(end));
 
@@ -17,7 +17,9 @@ alpha_f_mc_ndris = r1.alpha_f_mc_ndris;    % Already contains valid alphas only
 alpha_n_mc_ndris = r1.alpha_n_mc_ndris;    % Already contains valid alphas only
 
 disp(r1.avg_dris(end));
-
+% valid runs
+num_valid_runs = sum(r1.valid_MC);
+disp(['Number of valid MC runs: ', num2str(num_valid_runs)]);
 
 
 % Simple histogram for alpha_n and alpha_f for each cluster
@@ -193,7 +195,7 @@ plot(xi1, f3_dris_c1, 'b-', 'LineWidth', 1.5);
 plot(xi2, f3_dris_c2, 'r-', 'LineWidth', 1.5);
 xlabel('Rate (bps/Hz)');
 ylabel('Density');
-title('alpha=0.1 DRIS: Backscatter Rate PDF');
+title('DRIS: Backscatter Rate PDF');
 legend('Cluster 1', 'Cluster 2', 'Location', 'best');
 grid on;
 

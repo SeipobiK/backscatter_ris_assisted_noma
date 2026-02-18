@@ -73,12 +73,12 @@ function [alpha_n, alpha_f] = pac_opt_final(para,w_k,G_all_matrix, g_1_all, g_2_
                     gamma_n= A_n(c) / B_n(c);
 
                     % Minimum rate requirements
-                    r_min = 2^para.R_min_f - 1;
+                    r_min = 2^(0.98) - 1;
                     
                     % NOMA Power Allocation (assuming fixed: near=strong, far=weak)
                     % Far user (weak) gets more power, Near user (strong) gets less power
-                    alpha_f(c) = (r_min / (1 + r_min))*(1 + 1/gamma_f);
-                    alpha_n(c) = 1 - alpha_f(c);
+                    alpha_n(c) = (r_min / (1 + r_min))*(1 + 1/gamma_f);
+                    alpha_f(c) = 1 - alpha_n(c);
                     test_r=r_min / (1 + r_min);
                     test_g=test_r*(1 + 1/gamma_f);
                     
@@ -88,11 +88,11 @@ function [alpha_n, alpha_f] = pac_opt_final(para,w_k,G_all_matrix, g_1_all, g_2_
                     %     %          num2str(gamma_n), ', Gamma_f=', num2str(gamma_f),' ',num2str(gamma_f-gamma_n)] );
                     % end
                     
-                    % disp(['Cluster ', num2str(c), ': Gamma_n=', num2str(gamma_n), ...
-                    %       ', Gamma_f=', num2str(gamma_f), ', Alpha_n=', num2str(alpha_n(c)), ...
-                    %       ', Alpha_f=', num2str(alpha_f(c))]);
-                    % 
-                    % 
+                    disp(['Cluster ', num2str(c), ': Gamma_n=', num2str(gamma_n), ...
+                          ', Gamma_f=', num2str(gamma_f), ', Alpha_n=', num2str(alpha_n(c)), ...
+                          ', Alpha_f=', num2str(alpha_f(c))]);
+                    
+                    
 
                     % disp(['near user gamma  :',num2str(gamma_f),' Cluster   ',num2str(c), '  R min  : ',num2str(test_r),' Difference  ',num2str(gamma_f-gamma_n), ' PAC near user  :',num2str(alpha_n(c))])
                     % disp(['far user gamma  :',num2str(test_g),'   R min  : ',num2str(test_r),' PAC far user  :',num2str(alpha_f(c))])

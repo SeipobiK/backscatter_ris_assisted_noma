@@ -233,7 +233,7 @@ function [V_opt,A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_his
 
 
 
-        relax_parameter(m) = min(1, current_ratio + 0.5*(1-current_ratio)); % 10% step
+        relax_parameter(m) = min(1, current_ratio + 0.45*(1-current_ratio)); % 10% step
         % disp(['Relax  parametr :',num2str(relax_parameter(m))]);  
         % disp(['Step size :',num2str(step_size(m))]);
       

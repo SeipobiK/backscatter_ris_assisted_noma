@@ -41,7 +41,7 @@ function [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_de
         gamma_f = abs(H_f_combined)^2/(inter_cluster_far + noise);
         
         % Ensure near user has better channel gain (decodes later in SIC)
-        if gamma_n >= gamma_f
+        if gamma_n <= gamma_f
             % Near user is stronger (good) - decode later
             g_1_all{c} = g_local(:, c, 1)*scal;  % Near user
             g_2_all{c} = g_local(:, c, 2)*scal;  % Far user  

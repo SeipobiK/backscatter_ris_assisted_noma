@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -N fixed_power allocation
+#PBS -l select=1:ncpus=24:mpiprocs=24
+#PBS -P CSCI1834
+#PBS -q smp
+#PBS -l walltime=0:30:00
+CWD=/home/kseipobi/lustre/backscatter_ris_assisted_noma
+cd $CWD
+echo "Working directory is" `pwd`
+echo
+module purge
+module load chpc/math/matlab/R2020a
+echo "Modules loaded:"
+module list |& cat
+echo
+echo "Matlab interpreter:"
+which matlab
+echo
+nproc=`cat $PBS_NODEFILE | wc -l`
+echo "nproc is $nproc"
+echo
+echo "Threads & nodes used by this job:"
+cat $PBS_NODEFILE | sort | uniq -c
+echo
+echo "This script is running on node" `hostname`
+echo
+echo "Starting run..."
+# Run matlab on the m-file hello.m
+matlab -batch "hello"
+echo
+echo "... done."

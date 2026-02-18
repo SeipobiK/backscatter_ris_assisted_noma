@@ -34,8 +34,18 @@ rate_n_mc_ndris_outer = zeros(K,outer_iter,MC_MAX);
 channel_far_dris= zeros(K,outer_iter,MC_MAX);
 channel_near_dris= zeros(K,outer_iter,MC_MAX);
 
+inter_cluster_interference_near_dris= zeros(K,outer_iter,MC_MAX);
+inter_cluster_interference_near_bst_dris= zeros(K,outer_iter,MC_MAX);
+inter_cluster_interference_far_dris= zeros(K,outer_iter,MC_MAX);
+inter_cluster_interference_near_b_dris= zeros(K,outer_iter,MC_MAX);
+
 channel_far_ndris= zeros(K,outer_iter,MC_MAX);
 channel_near_ndris= zeros(K,outer_iter,MC_MAX);
+
+inter_cluster_interference_near_ndris= zeros(K,outer_iter,MC_MAX);
+inter_cluster_interference_near_bst_ndris= zeros(K,outer_iter,MC_MAX);
+inter_cluster_interference_far_ndris= zeros(K,outer_iter,MC_MAX);
+inter_cluster_interference_near_b_ndris= zeros(K,outer_iter,MC_MAX);
 
 rate_f_mc_dris_outer = zeros(K,outer_iter,MC_MAX);
 rate_n_mc_dris_outer = zeros(K,outer_iter,MC_MAX);
@@ -104,10 +114,10 @@ parfor mc = 1:MC_MAX
 
         %% RUN DRIS AND NDRIS SEPARATELY
         % DRIS: Identity J matrices
-        [far_history_dris,near_history_dris,obj_history_dris_local,alpha_n_dris,alpha_f_dris,w_kdris,R_n_dris,R_f_dris,R_c_n_dris,far_channel_dris,near_channel_dris] = run_dris_system(para, H_local, g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible);
+        [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cluster_interference_f,inter_cluster_interference_n_b,far_history_dris,near_history_dris,obj_history_dris_local,alpha_n_dris,alpha_f_dris,w_kdris,R_n_dris,R_f_dris,R_c_n_dris,far_channel_dris,near_channel_dris] = run_dris_system(para, H_local, g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible);
         
         % NDRIS: Optimized J matrices  
-        [far_history_ndris,near_history_ndris,obj_history_ndris_local,alpha_n_ndris,alpha_f_ndris,w_kndris,R_n_ndris,R_f_ndris,R_c_n_ndris,far_channel_ndris,near_channel_ndris ] = run_ndris_system(para, H_local, g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible);
+        [inter_cluster_interference_n_ndris,inter_cluster_interference_n_bst_ndris,inter_cluster_interference_f_ndris,inter_cluster_interference_n_b_ndris,far_history_ndris,near_history_ndris,obj_history_ndris_local,alpha_n_ndris,alpha_f_ndris,w_kndris,R_n_ndris,R_f_ndris,R_c_n_ndris,far_channel_ndris,near_channel_ndris ] = run_ndris_system(para, H_local, g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible);
         rate_f_mc_ndris_outer(:, :, mc) = far_history_ndris;
         rate_n_mc_ndris_outer(:, :, mc) = near_history_ndris;
 
@@ -120,6 +130,15 @@ parfor mc = 1:MC_MAX
         channel_near_dris(:, :, mc) = near_channel_dris;
         channel_far_ndris(:, :, mc) = far_channel_ndris;
         channel_near_ndris(:, :, mc) = near_channel_ndris;
+
+        inter_cluster_interference_near_dris(:, :, mc) = inter_cluster_interference_n;
+        inter_cluster_interference_near_bst_dris(:, :, mc) = inter_cluster_interference_n_bst;
+        inter_cluster_interference_far_dris(:, :, mc) = inter_cluster_interference_f;
+        inter_cluster_interference_near_b_dris(:, :, mc) = inter_cluster_interference_n_b;
+        inter_cluster_interference_near_ndris(:, :, mc) = inter_cluster_interference_n_ndris;
+        inter_cluster_interference_near_bst_ndris(:, :, mc) = inter_cluster_interference_n_bst_ndris;
+        inter_cluster_interference_far_ndris(:, :, mc) = inter_cluster_interference_f_ndris;
+        inter_cluster_interference_near_b_ndris(:, :, mc) = inter_cluster_interference_n_b_ndris;
 
         % Store results
         obj_history_dris(:, mc) = obj_history_dris_local;
@@ -244,7 +263,7 @@ fprintf('Comparison results saved in: %s\n', fullfile(output_folder, filename));
 
 
 %% Helper function for DRIS system (Identity J matrices)
-function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n,far_channel,near_channel] = run_dris_system(para, H_local, g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible)
+function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cluster_interference_f,inter_cluster_interference_n_b,far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n,far_channel,near_channel] = run_dris_system(para, H_local, g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible)
     
     K = para.K;
     N = para.N;
@@ -328,19 +347,29 @@ function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_
                 Theta = theta_test;
             end
         end
-    
+    inter_cluster_interference_n = zeros(K, outer_iter);
+    inter_cluster_interference_n_bst = zeros(K, outer_iter);
+    inter_cluster_interference_f = zeros(K, outer_iter);
+    inter_cluster_interference_n_b = zeros(K, outer_iter);
 
-    
-    
 
     obj_history = zeros(outer_iter, 1);
     far_history = zeros(K, outer_iter);
     near_history = zeros(K, outer_iter);
 
     far_channel = zeros(K, outer_iter);
-    near_channel = zeros(K, outer_iter);    
+    near_channel = zeros(K, outer_iter);   
+     
         [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
+
+            [inter_cluster_interference_near,inter_cluster_interference_near_bst,inter_cluster_interference_far,inter_cluster_interference_near_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
+    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r);
+
+        inter_cluster_interference_n(:,1) = inter_cluster_interference_near;
+        inter_cluster_interference_n_bst(:,1) = inter_cluster_interference_near_bst;
+        inter_cluster_interference_f(:,1) = inter_cluster_interference_far;
+        inter_cluster_interference_n_b(:,1) = inter_cluster_interference_near_b;
 
         obj_history(1) = WSR;
         far_history(:,1) = R_f;
@@ -419,6 +448,13 @@ function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_
 
         [WSR,R_n,R_f,R_c_n,A_f,A_n]= Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
+            [inter_cluster_interference_near,inter_cluster_interference_near_bst,inter_cluster_interference_far,inter_cluster_interference_near_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
+    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r)
+
+        inter_cluster_interference_n(:,tau_2+1) = inter_cluster_interference_near;
+        inter_cluster_interference_n_bst(:,tau_2+1) = inter_cluster_interference_near_bst;
+        inter_cluster_interference_f(:,tau_2+1) = inter_cluster_interference_far;
+        inter_cluster_interference_n_b(:,tau_2+1) = inter_cluster_interference_near_b;
 
         obj_history(tau_2+1) = WSR;
         % disp(size(R_n));
@@ -435,7 +471,7 @@ function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_
 end
 
 %% Helper function for NDRIS system (Optimized J matrices)
-function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n,far_channel,near_channel] = run_ndris_system(para, H_local , g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible)
+function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cluster_interference_f,inter_cluster_interference_n_b,far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_n,far_channel,near_channel] = run_ndris_system(para, H_local , g_local, f_local, g_1_all, g_2_all, g_b_all, f1_all, f2_all, G_all_matrix, outer_iter, max_iter, max_feasible)
     
     K = para.K;
     N = para.N;
@@ -510,8 +546,15 @@ function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_
     far_channel = zeros(K, outer_iter);
     near_channel = zeros(K, outer_iter);  
 
+    inter_cluster_interference_n = zeros(K, outer_iter);
+    inter_cluster_interference_n_bst = zeros(K, outer_iter);
+    inter_cluster_interference_f = zeros(K, outer_iter);
+    inter_cluster_interference_n_b = zeros(K, outer_iter);
+
     [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
+    [inter_cluster_interference_near,inter_cluster_interference_near_bst,inter_cluster_interference_far,inter_cluster_interference_near_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
+    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r)
 
         obj_history(1) = WSR;
         far_history(:,1) = R_f;
@@ -519,11 +562,13 @@ function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_
 
         far_channel(:,1) = A_f;
         near_channel(:,1) = A_n;
-
-            outer_iter=outer_iter-1;
-
+        inter_cluster_interference_n(:,1) = inter_cluster_interference_near;
+        inter_cluster_interference_n_bst(:,1) = inter_cluster_interference_near_bst;
+        inter_cluster_interference_f(:,1) = inter_cluster_interference_far;
+        inter_cluster_interference_n_b(:,1) = inter_cluster_interference_near_b;
         
     % Main optimization loop for NDRIS
+    outer_iter=outer_iter-1;
     for tau_2 = 1:outer_iter
         % Update channels
         % [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
@@ -586,6 +631,14 @@ function [far_history,near_history,obj_history,alpha_n, alpha_f,w_k,R_n,R_f,R_c_
 
         [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
+
+    [inter_cluster_interference_near,inter_cluster_interference_near_bst,inter_cluster_interference_far,inter_cluster_interference_near_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
+    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r)
+            inter_cluster_interference_n(:,tau_2+1) = inter_cluster_interference_near;
+        inter_cluster_interference_n_bst(:,tau_2+1) = inter_cluster_interference_near_bst;
+        inter_cluster_interference_f(:,tau_2+1) = inter_cluster_interference_far;
+        inter_cluster_interference_n_b(:,tau_2+1) = inter_cluster_interference_near_b;
+
 
         obj_history(tau_2+1) = WSR;
         far_history(:,tau_2+1) = R_f;

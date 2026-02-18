@@ -24,15 +24,15 @@ function [values] = para_init()
     values.K = 2;   % number of clusters
     values.M =8;   % antennas at BS
     values.RIS_size = [2,16]; % RIS dimensions (rows, columns)
-    values.N = prod(values.RIS_size);
+    values.N = prod(values.RIS_size);  
 
     % Power and rate requirements
 
     values.P_max =100; % maximum transmit power in Watts
     values.eta = 0.7; % backscatter coefficient
-    values.R_min_f = 2.5; 
-    values.R_min_n =2.5; 
-    values.R_c_min = 0.1; 
+    values.R_min_f = 0.1; 
+    values.R_min_n = 0.1; 
+    values.R_c_min = 0.01; 
     % values.R_c_min = 0.1; 
     values.nu_n = 1; 
 
@@ -43,7 +43,7 @@ function [values] = para_init()
 
     % Iterations
     values.MC_MAX =20;
-    values.outer_iter = 15; 
+    values.outer_iter = 5; 
     values.max_iter = 100; 
     values.tol = 1e-5; 
 

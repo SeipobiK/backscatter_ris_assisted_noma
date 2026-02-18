@@ -79,11 +79,14 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_pr
                         end
 
                     end
+                                                 
+
+
+                            
 
                     inv_pos(A_n(c)) <= real(trace(W(:,:,c) * H_n{c}' * H_n{c})) * alpha_n(c);
 
                     B_n(c) >= inter_cluster_interference_near + inter_cluster_interference_near_b + trace(W(:, :, c) * H_n_c{c}' * H_n_c{c}) * eta_k + para.noise ;
-
                     inv_pos(A_f(c)) <= real(trace(W(:,:,c) * H_f{c}' * H_f{c})) * alpha_f(c);
 
                     B_f(c) >= inter_cluster_interference_far + ...
@@ -103,5 +106,9 @@ function [W_opt, A_n_opt, B_n_opt, A_f_opt, B_f_opt, A_c_n_opt, B_c_n_opt,obj_pr
     B_c_n_opt = B_c_n;
     W_opt = W;
     status = cvx_status;
-
+     
+    % disp("Near user:");
+    % disp(R_n);
+    % disp("Far user:");
+    % disp(R_f');
 end
