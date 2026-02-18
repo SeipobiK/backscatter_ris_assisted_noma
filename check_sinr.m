@@ -259,7 +259,7 @@ save(fullfile(output_folder, filename), 'results');
 saveas(fig, fullfile(output_folder, filename_plot));
 
 fprintf('Comparison results saved in: %s\n', fullfile(output_folder, filename));
-
+toc;
 
 
 %% Helper function for DRIS system (Identity J matrices)
@@ -651,4 +651,3 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
 
     end
 end
-toc
