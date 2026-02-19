@@ -1,5 +1,5 @@
 %% ===================== LOAD DATA =====================
-r1 = load("results/2026/jan/29/full_workspace_dris_vs_ndris_09alpaN_M600_N6.000000e-01_20260129_021945.mat");
+r1 = load("results/2026/feb/19/full_workspace_dris_vs_ndris_09alpaN_M20_N9.000000e-01_20260219_134856.mat");
 
 disp(r1.para.R_c_min);
 disp(r1.avg_dris(end));

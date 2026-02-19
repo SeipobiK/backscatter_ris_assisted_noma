@@ -123,8 +123,8 @@ parfor mc = 1:MC_MAX
 
 
 
-        rate_f_mc_dris_outer(:, :, mc) = near_history_dris;
-        rate_n_mc_dris_outer(:, :, mc) = far_history_dris;
+        rate_n_mc_dris_outer(:, :, mc) = near_history_dris;
+        rate_f_mc_dris_outer(:, :, mc) = far_history_dris;
 
         channel_far_dris(:, :, mc) = far_channel_dris;
         channel_near_dris(:, :, mc) = near_channel_dris;
@@ -147,12 +147,12 @@ parfor mc = 1:MC_MAX
         alpha_f_mc_ndris(:,mc) = alpha_f_ndris;
         alpha_n_mc_ndris(:,mc) = alpha_n_ndris;
 
-        rate_f_mc_ndris(:, mc) = R_n_ndris;
-        rate_n_mc_ndris(:, mc) = R_f_ndris;
+        rate_n_mc_ndris(:, mc) = R_n_ndris;
+        rate_f_mc_ndris(:, mc) = R_f_ndris;
         rate_c_mc_ndris(:, mc) = R_c_n_ndris;
 
-        rate_f_mc_dris(:, mc) = R_n_dris;
-        rate_n_mc_dris(:, mc) = R_f_dris;
+        rate_f_mc_dris(:, mc) = R_f_dris;
+        rate_n_mc_dris(:, mc) = R_n_dris;
         rate_c_mc_dris(:, mc) = R_c_n_dris;
                 
 
@@ -445,6 +445,11 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
                 Theta = theta_test;
             end
         end
+               
+        
+        
+        [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+
 
         [WSR,R_n,R_f,R_c_n,A_f,A_n]= Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
@@ -463,7 +468,6 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
 
         far_channel(:,tau_2+1) = A_f;
         near_channel(:,tau_2+1) = A_n;
-        [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
             
 
         
@@ -628,6 +632,8 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
                 Theta = theta_test;
             end
         end
+                [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
+
 
         [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
@@ -647,7 +653,6 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
         far_channel(:,tau_2+1) = A_f;
         near_channel(:,tau_2+1) = A_n;
 
-        [g_1_all, g_2_all, g_b_all, f1_all, f2_all, decoding_order] = ensure_decoding_order(para, Theta, w_k, G_all_matrix, g_local, f_local, J_t, J_r);
 
     end
 end

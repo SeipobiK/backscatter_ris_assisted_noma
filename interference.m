@@ -1,4 +1,6 @@
-r=load("results/2026/feb/16/full_workspace_dris_vs_ndris_09alpaN_M20_N9.000000e-01_20260216_181944.mat");
+r=load("/home/morolong/Pictures/sic/full_workspace_dris_vs_ndris_09alpaN_M200_N9.000000e-01_20260218_153415.mat");
+
+disp(sum(r.valid_MC));
 
 outer_iter=r.outer_iter;
 
@@ -12,16 +14,7 @@ inter_cluster_interference_far_ndris= squeeze(mean(mean(r.inter_cluster_interfer
 inter_cluster_interference_near_b_ndris= squeeze(mean(mean(r.inter_cluster_interference_near_b_ndris),3)); 
 intra_cluster_interference_near_ndris= Effecctive_channel_near*r.para.alpha_k_n;
 
-disp('Inter-cluster interference (near user):');
-disp(inter_cluster_interference_near_ndris);
-disp('Inter-cluster interference (near user, backscatter):');
-disp(inter_cluster_interference_near_bst_ndris);
-disp('Inter-cluster interference (far user):');
-disp(inter_cluster_interference_far_ndris);
-disp('Inter-cluster interference (near user, backscatter):');
-disp(inter_cluster_interference_near_b_ndris);
-disp('Intra-cluster interference (near user):');
-disp(intra_cluster_interference_near_ndris);
+% 77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
 
 
 figure; hold on; grid on;

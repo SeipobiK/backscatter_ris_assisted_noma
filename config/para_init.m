@@ -10,8 +10,8 @@ function [values] = para_init()
     % values.noise = 10^(values.noise_dB/10)* (200)^4; 
     values.noise = (1e-12) * (400)^4; % override with fixed scaling
 
-    values.alpha_k_n = 0.1;
-    values.alpha_k_f = 0.9;
+    values.alpha_k_n = 0.4;
+    values.alpha_k_f = 0.6;
 
     % User weights
     values.weights_n = 1; % near user
@@ -43,7 +43,7 @@ function [values] = para_init()
 
     % Iterations
     values.MC_MAX =20;
-    values.outer_iter = 5; 
+    values.outer_iter = 10; 
     values.max_iter = 100; 
     values.tol = 1e-5; 
 

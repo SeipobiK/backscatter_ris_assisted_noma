@@ -1,11 +1,19 @@
 % % r1=load("/home/morolong/Documents/Msc/Codes/backscatter_ris_assisted_noma/results/2026/jan/12/full_workspace_dris_vs_ndris_09alpaN_M20_N32_20260112_131919.mat");
 % % disp(r1.alpha_f_mc_ndris(end));
 
-r=load("results/2026/feb/17/full_workspace_dris_vs_ndris_09alpaN_M20_N9.000000e-01_20260217_210458.mat");
+r=load("/home/morolong/Documents/Msc/Codes/backscatter_ris_assisted_noma/results/2026/feb/19/full_workspace_dris_vs_ndris_09alpaN_M20_N6.000000e-01_20260219_161901.mat                                                                                                                                                                                                                                                                                                                                                               ");
 
 outer_iter=r.outer_iter;
 
+disp(['ValidMCS: ', sum(r.valid_MC)]);
 
+disp(sum(r.valid_MC))
+
+disp(r.rate_n_mc_dris(:,r.valid_MC));
+
+
+
+ccc
 rate_f_mc_ndris_r = r.rate_f_mc_dris_outer(:, r.valid_MC);
 rate_n_mc_ndris_r = r.rate_n_mc_dris_outer(:, r.valid_MC);  
 
@@ -24,7 +32,7 @@ Effecctive_channel_near_pac = squeeze(mean(mean(r.channel_near_ndris/r.para.alph
 % ---- D-RIS ----
 Effecctive_channel_far = squeeze(mean(mean(r.channel_far_ndris,1),3)); 
 Effecctive_channel_near = squeeze(mean(mean(r.channel_near_ndris,1),3));
-
+                                                                                                
 % --- 1) SINR Plot ---
 figure;
 
