@@ -1,8 +1,10 @@
 %% ===================== LOAD DATA =====================
-r1 = load("results/2026/feb/19/full_workspace_dris_vs_ndris_09alpaN_M20_N9.000000e-01_20260219_134856.mat");
+r1 = load("/home/morolong/Pictures/18_results/full_workspace_dris_vs_ndris_09alpaN_M1500_N32_20260118_030914.mat");
 
-disp(r1.para.R_c_min);
+disp(r1.para);
 disp(r1.avg_dris(end));
+
+krkog
 
 num_valid_runs = sum(r1.valid_MC);
 disp(['Number of valid MC runs: ', num2str(num_valid_runs)]);

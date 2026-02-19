@@ -392,7 +392,7 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
             H_f_c{c} = g_b_all{c}' * J_r * Theta * J_t * f2_all{c} * G_all_matrix;                     
         end
 
-        disp(['======== DRIS Outer Iteration ', num2str(tau_2), ' ========']);
+        % disp(['======== DRIS Outer Iteration ', num2str(tau_2), ' ========']);
 
         if tau_2 > 1
         %  [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
@@ -454,7 +454,7 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
         [WSR,R_n,R_f,R_c_n,A_f,A_n]= Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
             [inter_cluster_interference_near,inter_cluster_interference_near_bst,inter_cluster_interference_far,inter_cluster_interference_near_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
-    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r)
+    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r);
 
         inter_cluster_interference_n(:,tau_2+1) = inter_cluster_interference_near;
         inter_cluster_interference_n_bst(:,tau_2+1) = inter_cluster_interference_near_bst;
@@ -558,7 +558,7 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
     [WSR,R_n,R_f,R_c_n,A_f,A_n] = Compute_WSR_NDRIS(para, w_k, G_all_matrix, g_1_all, g_2_all, ...
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
     [inter_cluster_interference_near,inter_cluster_interference_near_bst,inter_cluster_interference_far,inter_cluster_interference_near_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
-    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r)
+    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r);
 
         obj_history(1) = WSR;
         far_history(:,1) = R_f;
@@ -583,7 +583,7 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
             H_n_c{c} = g_b_all{c}' * J_r * Theta * J_t * f1_all{c} * G_all_matrix;
             H_f_c{c} = g_b_all{c}' * J_r * Theta * J_t * f2_all{c} * G_all_matrix;                     
         end
-        disp(['======== NDRIS Outer Iteration ', num2str(tau_2), ' ========']);
+        % disp(['======== NDRIS Outer Iteration ', num2str(tau_2), ' ========']);
 
         if tau_2 > 1
             % [alpha_n, alpha_f] = pac_opt_final(para, w_k, G_all_matrix, g_1_all, g_2_all, g_b_all, f1_all, f2_all, Theta, J_t, J_r);
@@ -639,7 +639,7 @@ function [inter_cluster_interference_n,inter_cluster_interference_n_bst,inter_cl
                     g_b_all, f1_all, f2_all, alpha_n, alpha_f, Theta, J_t, J_r);
 
     [inter_cluster_interference_near,inter_cluster_interference_near_bst,inter_cluster_interference_far,inter_cluster_interference_near_b,A_f,A_n] = sinr_terms(para,w_k,G_all_matrix, g_1_all,...
-    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r)
+    g_2_all,g_b_all,f1_all,f2_all, alpha_n, alpha_f, Theta,J_t,J_r);
             inter_cluster_interference_n(:,tau_2+1) = inter_cluster_interference_near;
         inter_cluster_interference_n_bst(:,tau_2+1) = inter_cluster_interference_near_bst;
         inter_cluster_interference_f(:,tau_2+1) = inter_cluster_interference_far;
